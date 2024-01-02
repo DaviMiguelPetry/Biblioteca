@@ -1,6 +1,7 @@
 @model ICollection<Emprestimo>
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
+    string Classe = "";
 }
 
 <div class="row">
@@ -27,7 +28,8 @@
     {
         <table class="table"> 
             <thead>
-                <tr><th>Id</th>
+                <tr>
+                <th>Id</th>
                 <th>Usuario</th>
                 <th>Data Empréstimo</th>
                 <th>Data Devolução</th>
@@ -39,7 +41,20 @@
             <tbody>
                 @foreach(Emprestimo e in Model)
                 {
-                <tr>
+                    @if(System.DateTime.Compare(System.DateTime.Now, e.DataDevolucao) > 0 && e.Devolvido == false)
+                    {
+                        Classe = "text-danger";
+                    }else
+                    {
+                        if(e.Devolvido == true)
+                        {
+                            Classe = "text-success";
+                        }else{
+                            Classe = "";
+                        }
+                    }
+
+                <tr class="@Classe">
                     <td>@e.Id</td>
                     <td>@e.NomeUsuario</td>
                     <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
@@ -54,6 +69,10 @@
         }else{
             <p>Nenhum Registro Encontrado</p>
         }
+        }
+
+        @for (int i = 1; i <= (int)ViewData["NumeroPag"]; i++){
+            <a class="badge badge-primary text-monospace" href="Listagem?p=@i">Pagina @i</a>
         }
     </div>
 </div>

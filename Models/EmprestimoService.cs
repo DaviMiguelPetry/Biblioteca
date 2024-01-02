@@ -1,5 +1,8 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Models
@@ -25,16 +28,18 @@ namespace Biblioteca.Models
                 emprestimo.LivroId = e.LivroId;
                 emprestimo.DataEmprestimo = e.DataEmprestimo;
                 emprestimo.DataDevolucao = e.DataDevolucao;
+                emprestimo.Devolvido = e.Devolvido;
 
                 bc.SaveChanges();
             }
         }
 
-        public ICollection<Emprestimo> ListarTodos(FiltrosEmprestimos filtro = null)
+        public ICollection<Emprestimo> ListarTodos(int pag=1, int tam=5, FiltrosEmprestimos filtro = null)
         {
             using(BibliotecaContext bc = new BibliotecaContext())
             {
                 IQueryable<Emprestimo> query;
+                int pular = (pag - 1) * tam;
                 
                 if(filtro != null)
                 {
@@ -42,11 +47,11 @@ namespace Biblioteca.Models
                     switch(filtro.TipoFiltro)
                     {
                         case "Usuario":
-                            query = bc.Emprestimos.Include (e => e.Livro).Where (e => e.NomeUsuario.Contains(filtro.Filtro));
+                            query = bc.Emprestimos.Include (e => e.Livro).Where (e => e.NomeUsuario.Contains(filtro.Filtro, StringComparison.CurrentCultureIgnoreCase));
                         break;
 
                         case "Livro":
-                           query = bc.Emprestimos.Include (e => e.Livro).Where (e => e.Livro.Titulo.Contains(filtro.Filtro));
+                           query = bc.Emprestimos.Include (e => e.Livro).Where (e => e.Livro.Titulo.Contains(filtro.Filtro, StringComparison.CurrentCultureIgnoreCase));
                         break;
 
                         default:
@@ -57,7 +62,7 @@ namespace Biblioteca.Models
                     query = bc.Emprestimos.Include (e => e.Livro);
                 }
 
-                return query.OrderByDescending(e => e.DataDevolucao).ToList();
+                return query.OrderByDescending(e => e.DataDevolucao).Skip(pular).Take(tam).ToList();
             }
         }
 
@@ -68,29 +73,11 @@ namespace Biblioteca.Models
                 return bc.Emprestimos.Find(id);
             }
         }
+
+        public int NumeroDeEmprestimos (){
+            using(var context = new BibliotecaContext()){
+                return context.Emprestimos.Count();
+            }
+        }
     }
 }
-
-     //       public ICollection<Livro> ListarTodos(FiltrosLivros filtro = null)
-     //   {
-       //     using(BibliotecaContext bc = new BibliotecaContext())
-       //     {
-       //         IQueryable<Livro> query;
-                
-        //        if(filtro != null)
-         //       {
-                    //definindo dinamicamente a filtragem
-          //          switch(filtro.TipoFiltro)
-            //        {
-             //           case "Autor":
-             ///               query = bc.Livros.Where(l => l.Autor.Contains(filtro.Filtro));
-              //          break;
-
-                //        case "Titulo":
-                 //           query = bc.Livros.Where(l => l.Titulo.Contains(filtro.Filtro));
-                 //       break;
-
-                  //      default:
-                   //         query = bc.Livros;
-                  //      break;
-                  //  }

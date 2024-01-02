@@ -1,14 +1,14 @@
-@model List<Livro>
+@model List<Usuario>
 @{
-    ViewData["Title"] = "Listagem de Livros";
+    ViewData["Title"] = "Listagem de Usuario";
 }
 <div class="row">
     <div class="col-md-12">
     <form class="form-inline" method="POST">
         <div class="form-group mb-2">
             <select name="TipoFiltro" class="form-control">
-                <option value="Autor">Autor</option>
-                <option value="Titulo">Título</option>
+                <option value="Nome">Nome</option>
+                <option value="Login">Login</option>
             </select>
         </div>
         <div class="form-group mb-2 mx-sm-3">
@@ -26,22 +26,34 @@
          
         <table class="table table-striped"> 
             <thead>
-                <tr><th>Id</th>
-                <th>Titulo</th>
-                <th>Autor</th>
-                <th>Ano</th>
-                <th></th>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Login</th>
+                    <th>Senha</th>
+                    <th>Tipo</th>
+                    <th>    </th>
                 </tr>
             </thead>
             <tbody>
-                @foreach(Livro l in Model)
+                @foreach(Usuario u in Model)
                 {
                 <tr>
-                    <td>@l.Id</td>
-                    <td>@l.Titulo</td>
-                    <td>@l.Autor</td>
-                    <td>@l.Ano</td>
-                    <td><a href="/Livro/Edicao/@l.Id">Editar</a></td>
+                    <td>@u.Id</td>
+                    <td>@u.Nome</td>
+                    <td>@u.Login</td>
+                    <td>@u.Senha</td>
+
+                    @if (u.Tipo == Usuario.ADMIN)
+                    {
+                        <td>Administrador</td>
+                    }
+                    else
+                    {
+                        <td>Padrão</td>
+                    }
+
+                    <td><a href="/Usuario/Edicao/@u.Id">Editar</a> | <a href="/Usuario/Excluir/@u.Id">Excluir</a></td>
                 </tr>
                 }
             </tbody>

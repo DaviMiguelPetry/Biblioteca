@@ -13,5 +13,13 @@ namespace Biblioteca.Models
         
         public int LivroId { get; set; }
         public Livro Livro { get; set; }
+
+     //   public bool Atraso()
+     //   {
+      //      if(!Devolvido)
+      //          return DataDevolucao < DateTime.Today ? true : false;
+     //       return false;
+            
+     //   }
     }
 }

@@ -1,8 +1,8 @@
-using Biblioteca.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Biblioteca.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
 {
@@ -37,7 +37,7 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Listagem");
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro)
+        public IActionResult Listagem(string tipoFiltro, string filtro, int p=1)
         {
             Autenticacao.CheckLogin(this);
             FiltrosEmprestimos objFiltro = null;
@@ -47,8 +47,12 @@ namespace Biblioteca.Controllers
                 objFiltro.Filtro = filtro;
                 objFiltro.TipoFiltro = tipoFiltro;
             }
+            int quantPag = 5;
             EmprestimoService emprestimoService = new EmprestimoService();
-            return View(emprestimoService.ListarTodos(objFiltro));
+            int totalRegistros = emprestimoService.NumeroDeEmprestimos();
+            ICollection<Emprestimo> lista = emprestimoService.ListarTodos (p, quantPag, objFiltro);
+            ViewData["NumeroPag"] = (int) Math.Ceiling((double) totalRegistros / quantPag);
+            return View(lista);
         }
 
         public IActionResult Edicao(int id)
